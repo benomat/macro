@@ -30,9 +30,9 @@ def update():
 
 if __name__ == '__main__':
     if check_installed():
-        system("title"+check_version)
+        system("title"+check_version())
         if not check_right_version(): update()
-        system("title"+check_version)
+        system("title"+check_version())
         print("starting macro")
         system(f"{installpath}\\main.exe")
     else:
@@ -41,5 +41,5 @@ if __name__ == '__main__':
         mkdir(installpath)
         download(f"https://github.com/Benomat/macro/releases/download/main-{check_newest_version}/main.exe",installpath+"\\main.exe")
         download("https://raw.githubusercontent.com/Benomat/macro/main/version",installpath+"\\version")
-        system("title"+check_version)
+        system("title"+check_version())
         system(f"{installpath}\\main.exe")
