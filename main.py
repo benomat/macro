@@ -1,13 +1,9 @@
 import pyautogui as pg;from time import sleep
 from  random import randint
 import json
-from os import system
-system("title bnmt's farming macro V2.0")
 drop_time=4
 data={}
-try:
-    file = open("config.txt").read()
-except:#settings holen
+def change_settings():
     data["time_for_row"]=float(input("Wie viele sekunden brauchst du für eine Reihe?\n"))
     data["row_amount"]=int(input("Wie viele rows? (MUSS EINE GRADE ZAHL SEIN WEIL JA)\n"))
     data["respawn_method"]=int(input("""Wähle eine option aus mit der du an den Anfang der farm kommst!
@@ -23,6 +19,12 @@ except:#settings holen
     print("(du kannst das später in config.txt ändern.)")
     sleep(10)
     exit(0)
+try:
+    file = open("config.txt").read()
+except:#settings holen
+    change_settings()
+if input("Drücke ENTER um den macro zu starten, wenn du die Einstellungen ändern möchtest schreibe 1!\n")=="1": change_settings()
+print("Macro started in 5 Sekunden")
 data=json.loads(file)
 sleep(5)
 pg.keyDown("W")
