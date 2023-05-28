@@ -14,16 +14,17 @@ def get_site_content(url):
 def check_installed():
     try: open(installpath+"\\version", 'r').close(); return True
     except: return False
-
+def check_newest_version():
+    return get_site_content("https://raw.githubusercontent.com/Benomat/macro/main/version").split("\n")[0]
 def check_version():
     return open(installpath+"\\version", 'r').read().split("\n")[0]
 def check_right_version():
-    if check_version() == get_site_content("https://raw.githubusercontent.com/Benomat/macro/main/version").split("\n")[0]: print("everything up to date");return True
+    if check_version() == check_newest_version: print("everything up to date");return True
     else: return False
 def update():
     system("title Updating!")
     print("updating...")
-    download("https://github.com/Benomat/macro/releases/download/main/main.exe",installpath+"\\main.exe")
+    download(f"https://github.com/Benomat/macro/releases/download/main-{check_newest_version}/main.exe",installpath+"\\main.exe")
     download("https://raw.githubusercontent.com/Benomat/macro/main/version",installpath+"\\version")
 
 
@@ -38,7 +39,7 @@ if __name__ == '__main__':
         system("title Installing!")
         print("installing..")
         mkdir(installpath)
-        download("https://github.com/Benomat/macro/releases/download/main/main.exe",installpath+"\\main.exe")
+        download(f"https://github.com/Benomat/macro/releases/download/main-{check_newest_version}/main.exe",installpath+"\\main.exe")
         download("https://raw.githubusercontent.com/Benomat/macro/main/version",installpath+"\\version")
         system("title"+check_version)
         system(f"{installpath}\\main.exe")
