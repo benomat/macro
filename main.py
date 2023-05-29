@@ -1,14 +1,17 @@
 import pyautogui as pg;from time import sleep
 from  random import randint
 import json
+from os import system, popen
 drop_time=4
 data={}
+def get_exact_path(old_path):return popen("echo " + old_path).read().split("\n")[0]
+installpath=get_exact_path('%appdata%\\bmts_macro')
 def change_settings():
     data["time_for_row"]=float(input("Wie viele sekunden brauchst du für eine Reihe?\n"))
     data["row_amount"]=int(input("Wie viele rows? (MUSS EINE GRADE ZAHL SEIN WEIL JA)\n"))
     data["respawn_method"]=int(input("""Wähle eine option aus mit der du an den Anfang der farm kommst!
-    1 - Lobbyhop (Am Ende der Farm ein mal auf das private island und wieder zurück, der start der Farm muss mit /setspawn festgelegt sein)
-    2 - Respawn (Am Ende der Farm runterfallen und mit /setspawn an den Anfang der Farm gelangen)
+    1 - Lobbyhop (Am Ende der Farm ein mal auf das private island und wieder zurück, der start der Farm muss mit /setspawn festgelegt sein) [Könnte bei lags verkacken - Server restart juckt nicht]
+    2 - Respawn (Am Ende der Farm runterfallen und mit /setspawn an den Anfang der Farm gelangen) [sehr sicher - server restart fickt aber]
     3 - PlotTP NICHT EMPFOHLEN (Am Ende der Farm mit /plottp <plot> an den Anfang der Farm gelangen)\n"""))
     if data["respawn_method"] == 3:
         data["plot_number"]=int(input("Welcher plot ist der startpunkt?\n"))
@@ -16,13 +19,13 @@ def change_settings():
         data["plot_number"]=0
     if input("Muss shift durchgehend gedrückt sein? [Ja/Nein]\n").lower() == "ja": data["option_shift"]=True
     else: data["option_shift"]=False
-    open("config.txt","w").write(json.dumps(data))
+    open(installpath+"\\config.txt","w").write(json.dumps(data))
     print("Schließe dieses fenster und starte das Porgramm neu wenn du bereit bist mein süßer! (Schließt sich auch in 10 sekunden weil geil)")
     print("(du kannst das später in config.txt ändern.)")
     sleep(10)
     exit(0)
 try:
-    file = open("config.txt").read()
+    file = open(installpath+"\\config.txt").read()
 except:#settings holen
     change_settings()
 data=json.loads(file)
@@ -32,6 +35,7 @@ if input("Drücke ENTER um den macro zu starten, wenn du die Einstellungen ände
 print("Macro started in 5 Sekunden")
 sleep(5)
 pg.keyDown("W")
+if data["option_shift"]: pg.keyDown("SHIFT")
 pg.mouseDown(button='left')
 print("Wenn fertig: str+c in diesem fenster drücken <33")
 while True:
@@ -44,14 +48,19 @@ while True:
         sleep(data["time_for_row"]+(randint(0,5)/10+randint(0,10)/100))
         pg.keyUp("D")
     if data["respawn_method"]==1:
+        pg.keyUp("W")
+        pg.mouseUp(button='left')
         pg.press("T")
         pg.write("/is")
         pg.press("ENTER")
-        sleep(1.2)
+        sleep(1.7)
         pg.press("T")
         pg.write("/warp garden")
         pg.press("ENTER")
-        sleep(.75)
+        sleep(1.4)
+        pg.keyDown("SPACE");pg.keyUp("SPACE");sleep(.1);pg.keyDown("SPACE");pg.keyUp("SPACE");sleep(.1)
+        pg.keyDown("W")
+        pg.mouseDown(button='left')
     elif data["respawn_method"]==2: sleep(drop_time)
     elif data["respawn_method"]==3:
         pg.press("T")
