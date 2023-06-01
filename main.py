@@ -1,7 +1,7 @@
 import pyautogui as pg;from time import sleep
 from  random import randint
 import json
-from os import system, popen, _exit
+from os import system, popen, _exit,remove
 drop_time=4
 data={}
 def get_exact_path(old_path):return popen("echo " + old_path).read().split("\n")[0]
@@ -30,7 +30,9 @@ try:
 except:#settings holen
     change_settings()
 data=json.loads(file)
-if input("Drücke ENTER um den macro zu starten, wenn du die Einstellungen ändern möchtest schreibe 1!\n")=="1": change_settings()
+extra_shit=input("Drücke ENTER um den macro zu starten, wenn du die Einstellungen ändern möchtest schreibe 1!\n")
+if extra_shit=="1": change_settings()
+elif extra_shit=="2": remove(installpath+"\\version");print("Starte jetzt neu auf süß dann sollte wieder gehen")
 print("Macro started in 5 Sekunden")
 sleep(5)
 pg.keyDown("W")
@@ -52,12 +54,12 @@ while True:
         pg.press("T")
         pg.write("/is")
         pg.press("ENTER")
-        sleep(1.7)
+        sleep(2)
         pg.press("T")
         pg.write("/warp garden")
         pg.press("ENTER")
-        sleep(1.8)
-        pg.keyDown("SPACE");pg.keyUp("SPACE");sleep(.1);pg.keyDown("SPACE");pg.keyUp("SPACE");sleep(.1)
+        sleep(2.2)
+        pg.keyDown("SPACE");sleep(.05);pg.keyUp("SPACE");sleep(.07);pg.keyDown("SPACE");sleep(.05);pg.keyUp("SPACE");sleep(.1)
         if data["option_shift"]: pg.keyDown("SHIFT")
         pg.keyDown("W")
         pg.mouseDown(button='left')
