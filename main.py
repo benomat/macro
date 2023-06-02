@@ -1,7 +1,7 @@
 import pyautogui as pg;from time import sleep
 from  random import randint
 import json
-from os import system, popen, _exit,remove
+from os import system, popen, _exit, remove
 drop_time=4
 data={}
 def get_exact_path(old_path):return popen("echo " + old_path).read().split("\n")[0]
@@ -59,8 +59,9 @@ while True:
         pg.write("/warp garden")
         pg.press("ENTER")
         sleep(2.2)
-        pg.keyDown("SPACE");sleep(.05);pg.keyUp("SPACE");sleep(.07);pg.keyDown("SPACE");sleep(.05);pg.keyUp("SPACE");sleep(.1)
-        if data["option_shift"]: pg.keyDown("SHIFT")
+        pg.keyDown("SHIFT")
+        sleep(0.5)
+        if not data["option_shift"]: pg.keyDown("SHIFT")
         pg.keyDown("W")
         pg.mouseDown(button='left')
     elif data["respawn_method"]==2: sleep(drop_time)
