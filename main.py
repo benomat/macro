@@ -124,7 +124,7 @@ while True:
         pg.keyDown("SHIFT")
         sleep(0.5)
         if not data["option_shift"]: pg.keyDown("SHIFT")
-        pg.keyDown("W")
+        if data["press_w"]:pg.keyDown("W")
         pg.mouseDown(button='left')
     elif data["respawn_method"]==2: sleep(drop_time)
     elif data["respawn_method"]==3:
@@ -133,12 +133,12 @@ while True:
         pg.press("ENTER")
         sleep(.75)
         if data["option_shift"]: pg.keyDown("SHIFT")
-        pg.keyDown("W")
+        if data["press_w"]:pg.keyDown("W")
         pg.mouseDown(button='left')
     elif data["respawn_method"]==4:
         pg.press("T")
         pg.write("/warp garden")
         pg.press("ENTER")
         if data["option_shift"]: pg.keyDown("SHIFT")
-        pg.keyDown("W")
+        if data["press_w"]:pg.keyDown("W")
         pg.mouseDown(button='left')
