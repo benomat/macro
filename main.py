@@ -1,12 +1,48 @@
 import pyautogui as pg;from time import sleep
 from  random import randint
 import json
-from os import system, popen, _exit, remove
+from os import system, popen, _exit, remove,mkdir,path,listdir
+import keyboard
+woohoo=False
 drop_time=4
 data={}
+def selector(items):
+    done = False
+    selected = 0
+    while not done:
+        system("cls")
+        txt = ""
+        for index, item in enumerate(items):
+            if index == selected:
+                txt += f"(X) | {item}\n"
+            else:
+                txt += f"( ) | {item}\n"
+        print(txt)
+        event = keyboard.read_event()
+        if event.event_type == keyboard.KEY_DOWN:
+            if event.name in ['nach-unten','down']:
+                selected = (selected + 1) % len(items)
+                while True:
+                    event = keyboard.read_event()
+                    if event.event_type == keyboard.KEY_UP:
+                        break
+            elif event.name in ['nach-oben','up']:
+                selected = (selected - 1) % len(items)
+                while True:
+                    event = keyboard.read_event()
+                    if event.event_type == keyboard.KEY_UP:
+                        break
+            elif event.name == 'enter':
+                done = True
+                break
+    system("cls")
+    return selected
+
+
 def get_exact_path(old_path):return popen("echo " + old_path).read().split("\n")[0]
-installpath=get_exact_path('%appdata%\\bmts_macro')
+installpath=get_exact_path('%appdata%\\macro')
 def change_settings():
+    global selectedcfg
     data["time_for_row"]=float(input("Wie viele sekunden brauchst du für eine Reihe?\n"))
     data["row_amount"]=int(input("Wie viele rows? (MUSS EINE GRADE ZAHL SEIN WEIL JA)\n"))
     data["respawn_method"]=int(input("""Wähle eine option aus mit der du an den Anfang der farm kommst!
@@ -20,22 +56,39 @@ def change_settings():
         data["plot_number"]=0
     if input("Muss shift durchgehend gedrückt sein? [Ja/Nein]\n").lower() == "ja": data["option_shift"]=True
     else: data["option_shift"]=False
-    open(installpath+"\\config.txt","w").write(json.dumps(data))
-    print("Schließe dieses fenster und starte das Porgramm neu wenn du bereit bist mein süßer! (Schließt sich auch in 10 sekunden weil geil)")
-    print("(du kannst das später in config.txt ändern.)")
-    sleep(10)
-    _exit(0)
-try:
-    file = open(installpath+"\\config.txt").read()
-except:#settings holen
-    change_settings()
+    if input("Muss W durchgehend gedrückt sein? [Ja/Nein]\n").lower() == "ja": data["press_w"]=True; data["w_time"]=float(input("wie lange bei w geradeaus laufen?\n"))
+    else: data["press_w"]=False;data["w_time"]=1.4
+    cfgname=input("Wie soll die config heißen?\n")
+    open(installpath+"\\configs\\"+cfgname+".txt","w").write(json.dumps(data))
+    print("(du kannst das später im config ordner ändern.)")
+    change_selected(cfgname)
+def change_selected(name):
+    global selectedcfg
+    with open(installpath+"\\selected.txt","w") as f:
+        f.write(name)
+        f.close()
+    selectedcfg=name
+def select_config():
+    list= [config.split(".")[0] for config in listdir(installpath+"\\configs")] 
+    change_selected(list[selector(list)])
+while not woohoo:
+    if not path.isdir(installpath+"\\configs"):
+        mkdir(installpath+"\\configs")
+        change_settings()
+    else: 
+        extra_shit=input("Drücke ENTER um den macro zu starten, wenn du die config ändern möchtest schreibe select. Wenn du eine neue erstellen möchtest schreibe new!\n")
+        if extra_shit.lower().startswith("n"): change_settings()
+        elif extra_shit.lower().startswith("s"): select_config();sleep(.5)
+        elif extra_shit=="2": remove(installpath+"\\version");print("Starte jetzt neu auf süß dann sollte wieder gehen")
+        else:
+            try: selectedcfg
+            except: selectedcfg=open(installpath+"\\selected.txt").read()
+            woohoo=True
+file = open(installpath+"\\configs\\"+selectedcfg+".txt").read()
 data=json.loads(file)
-extra_shit=input("Drücke ENTER um den macro zu starten, wenn du die Einstellungen ändern möchtest schreibe 1!\n")
-if extra_shit=="1": change_settings()
-elif extra_shit=="2": remove(installpath+"\\version");print("Starte jetzt neu auf süß dann sollte wieder gehen")
 print("Macro started in 5 Sekunden")
 sleep(5)
-pg.keyDown("W")
+if data["press_w"]: pg.keyDown("W")
 if data["option_shift"]: pg.keyDown("SHIFT")
 pg.mouseDown(button='left')
 print("Wenn fertig: str+c in diesem fenster drücken <33")
@@ -44,10 +97,19 @@ while True:
         pg.keyDown("A")
         sleep(data["time_for_row"]+(randint(0,5)/10+randint(0,10)/100))
         pg.keyUp("A")
-        sleep(.2)
+        if not data["press_w"]:
+            pg.keyDown("W")
+            sleep(data["w_time"])
+            pg.keyUp("W")
+        else: sleep(.2)
         pg.keyDown("D")
         sleep(data["time_for_row"]+(randint(0,5)/10+randint(0,10)/100))
         pg.keyUp("D")
+        if not data["press_w"]:
+            pg.keyDown("W")
+            sleep(data["w_time"])
+            pg.keyUp("W")
+        else: sleep(.2)
     if data["respawn_method"]==1:
         pg.keyUp("W")
         pg.mouseUp(button='left')
